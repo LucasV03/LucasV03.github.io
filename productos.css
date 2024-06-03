@@ -1,0 +1,142 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.products-page {
+    padding: 20px;
+}
+
+/* Estilos para el layout de productos y filtros */
+.product-list {
+    display: flex;
+    flex-direction: column; /* Cambia a columna para que los filtros estén arriba */
+}
+
+.filters {
+    display: flex;
+    justify-content: space-between; /* Asegura que los filtros estén distribuidos */
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.filters .filter-left, .filters .filter-right {
+    display: flex;
+    align-items: center;
+}
+
+.filters label {
+    margin-right: 10px;
+}
+
+.products {
+    display: grid; /* Cambia a grid layout */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Define columnas automáticas */
+    gap: 110px; /* Espacio entre los elementos */
+    padding-top: 20px;
+}
+
+.product-item {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.product-item:hover {
+    transform: scale(1.05);
+}
+
+.product-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.price {
+    color: #b12704;
+    font-weight: bold;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Estilos para la barra de navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Asegura que los elementos estén distribuidos correctamente */
+    align-items: center;
+}
+
+.links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 1px;
+    display: flex;
+}
+
+.links li {
+    margin-right: 20px;
+}
+
+.links li a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.logo a {
+    text-decoration: none;
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+.search-cart {
+    display: flex;
+    align-items: center;
+}
+
+.search-cart input[type="text"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-cart .btn-cart {
+    position: relative;
+}
+
+.search-cart .btn-cart .quantity {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+h2{
+    text-align: center;
+    margin-top: 10px;
+}
