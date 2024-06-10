@@ -1,3 +1,19 @@
+<?php 
+require 'config/config.php';
+require 'config/database.php';
+$db = new Database();
+$con = $db->conectar();
+
+$productos = isset($_SESSION['carrito']['productos']) ? $_SESSION['carrito']['productos'] : null;
+$lista_carrito = [];
+if ($productos != null) {
+    foreach ($productos as $clave => $cantidad) {
+        $sql = $con->prepare("SELECT id, nombre, precio, $cantidad AS cantidad FROM productos WHERE id=? AND activo=1");
+        $sql->execute([$clave]);
+        $lista_carrito[] = $sql->fetch(PDO::FETCH_ASSOC);
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,9 +22,10 @@
     <title>Carrito de Compras</title>
     <link rel="stylesheet" href="carrito.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-<header>
+    <header>
         <div class="container">
             <nav class="navbar">
                 <ul class="links">
@@ -29,50 +46,63 @@
                         </label>
                     </div>
                     <input type="text" placeholder="Buscar...">
-                    <button data-quantity="0" class="btn-cart">
-                        <svg class="icon-cart" viewBox="0 0 24.38 30.52" height="30.52" width="24.38" xmlns="http://www.w3.org/2000/svg">
-                            <title>icon-cart</title>
-                            <path transform="translate(-3.62 -0.85)" d="M28,27.3,26.24,7.51a.75.75,0,0,0-.76-.69h-3.7a6,6,0,0,0-12,0H6.13a.76.76,0,0,0-.76.69L3.62,27.3v.07a4.29,4.29,0,0,0,4.52,4H23.48a4.29,4.29,0,0,0,4.52-4ZM15.81,2.37a4.47,4.47,0,0,1,4.46,4.45H11.35a4.47,4.47,0,0,1,4.46-4.45Zm7.67,27.48H8.13a2.79,2.79,0,0,1-3-2.45L6.83,8.34h3V11a.76.76,0,0,0,1.52,0V8.34h8.92V11a.76.76,0,0,0,1.52,0V8.34h3L26.48,27.4a2.79,2.79,0,0,1-3,2.44Zm0,0"></path>
-                        </svg>
-                        <span class="quantity"></span>
-                    </button>
+                    <div class="carrit">
+                        <a href="carrito.php">
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+                        <span class="texto-carrito" id="num_cart"><?php echo $num_cart;?></span>
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
 
-
     <div class="contenedor">
         <h1 class="encabezado-carrito">TU CARRITO</h1>
         <table class="tabla-carrito">
-            <tr>
-                <th>Artículo</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-            </tr>
-            <tr>
-                <td>
-                    <img src="ruta/a/pequeno_bol.jpg" alt="Pequeño Bol" class="imagen-producto">
-                    Pequeño Bol por Christian Roy
-                </td>
-                <td>1</td>
-                <td>$34.00</td>
-            </tr>
-            <tr>
-                <td>
-                    <img src="imgs/productos/1/prin.jpg" alt="Pequeño Dip" class="imagen-producto">
-                    Pequeño Dip por Atelier Tremà
-                </td>
-                <td>1</td>
-                <td>$20.00</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Artículo</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if($lista_carrito != null) {
+                    $total = 0;
+                    foreach ($lista_carrito as $producto) {
+                        $_id = $producto['id'];
+                        $nombre = $producto['nombre'];
+                        $precio = $producto['precio'];
+                        $cantidad = $producto['cantidad'];
+                        $subtotal = $cantidad * $precio;
+                        $total += $subtotal;
+                ?>
+                <tr>
+                    <td><?php echo $nombre; ?></td>
+                    <td>$<?php echo number_format($precio, 2, '.', ','); ?></td>
+                    <td>
+                        <input type="number" min="1" max="10" step="1" value="<?php echo $cantidad; ?>" size="5" id="cantidad_<?php echo $_id; ?>" onchange="actualizaCantidad(this.value, <?php echo $_id; ?>)">
+                    </td>
+                    <td>
+                        <div id="subtotal_<?php echo $_id; ?>" name="subtotal[]">$<?php echo number_format($subtotal, 2, '.', ','); ?></div>
+                    </td>
+                    <td>
+                        <a href="#" id="eliminar" data-bs-id="<?php echo $_id; ?>" data-bs-toggle="modal" data-bs-target="#eliminarModal">Eliminar</a>
+                    </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+            <?php } ?>
         </table>
         <div class="total-carrito">
-            <p>Envío: $10.00</p>
-            <h3>Total: $64.00</h3>
+            <h3 id="total">Total: $<?php echo number_format($total, 2, '.', ','); ?></h3>
         </div>
         <a href="checkout.php" class="boton-checkout">FINALIZAR COMPRA</a>
     </div>
+
     <footer>
         <div class="footer-container">
             <div class="footer-section">
@@ -89,11 +119,9 @@
             <div class="footer-section">
                 <h3>PRODUCTOS</h3>
                 <ul>
-                    <li><a href="#">Vases</a></li>
-                    <li><a href="#">Mugs & Cups</a></li>
-                    <li><a href="#">Plates</a></li>
-                    <li><a href="#">Jugs</a></li>
-                    <li><a href="#">Gift Baskets</a></li>
+                    <li><a href="#">DIOR</a></li>
+                    <li><a href="#">Carolina Herrera</a></li>
+                    <li><a href="#">Versace</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -106,6 +134,54 @@
             </div>
         </div>
     </footer>
-    </div>
+
+    <script>
+        function actualizaCantidad(cantidad, id) {
+    let url = 'clases/actualizar_carrito.php';
+    let formData = new FormData();
+    formData.append('action', 'agregar');
+    formData.append('id', id);
+    formData.append('cantidad', cantidad);
+
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+    }).then(response => {
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                console.error('Respuesta no válida del servidor:', text);
+                throw new Error('Respuesta no válida del servidor');
+            }
+        });
+    }).then(data => {
+        if (data.ok) {
+            let divsubtotal = document.getElementById('subtotal_' + id);
+            divsubtotal.innerHTML = data.sub;
+
+            let total = 0.00;
+            let list = document.getElementsByName('subtotal[]');
+
+            for (let i = 0; i < list.length; i++) {
+                total += parseFloat(list[i].innerHTML.replace(/[$,]/g, ''));
+            }
+
+            total = new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(total);
+            document.getElementById('total').innerHTML = "$" + total;
+        } else {
+            alert('Hubo un problema con la actualización del carrito. Por favor, inténtelo de nuevo.');
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un problema con la actualización del carrito. Por favor, inténtelo de nuevo.');
+    });
+}
+
+    </script>
 </body>
 </html>

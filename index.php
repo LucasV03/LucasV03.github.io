@@ -1,4 +1,6 @@
 <?php 
+
+require 'config/config.php';
 require 'config/database.php';
 $db = new Database();
 $con = $db->conectar();
@@ -7,7 +9,7 @@ $sql = $con->prepare("SELECT id, nombre, precio FROM productos WHERE activo=1");
 $sql->execute();
 $resultado = $sql->fetchAll(PDO::FETCH_ASSOC);
 $con = null; 
-
+//session_destroy()
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,6 +18,9 @@ $con = null;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ecommerce de Perfumes</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+
 </head>
 <body>
     <header>
@@ -38,14 +43,15 @@ $con = null;
                             <span class="slider"></span>
                         </label>
                     </div>
+                    
                     <input type="text" placeholder="Buscar...">
-                    <button data-quantity="0" class="btn-cart">
-                        <svg class="icon-cart" viewBox="0 0 24.38 30.52" height="30.52" width="24.38" xmlns="http://www.w3.org/2000/svg">
-                            <title>icon-cart</title>
-                            <path transform="translate(-3.62 -0.85)" d="M28,27.3,26.24,7.51a.75.75,0,0,0-.76-.69h-3.7a6,6,0,0,0-12,0H6.13a.76.76,0,0,0-.76.69L3.62,27.3v.07a4.29,4.29,0,0,0,4.52,4H23.48a4.29,4.29,0,0,0,4.52-4ZM15.81,2.37a4.47,4.47,0,0,1,4.46,4.45H11.35a4.47,4.47,0,0,1,4.46-4.45Zm7.67,27.48H8.13a2.79,2.79,0,0,1-3-2.45L6.83,8.34h3V11a.76.76,0,0,0,1.52,0V8.34h8.92V11a.76.76,0,0,0,1.52,0V8.34h3L26.48,27.4a2.79,2.79,0,0,1-3,2.44Zm0,0"></path>
-                        </svg>
-                        <span class="quantity"></span>
-                    </button>
+                    <div class="carrito">
+                    <a href="carrito.php">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+
+                    <span class="texto-carrito" id="num_cart"><?php echo $num_cart;?></span>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -120,6 +126,7 @@ $con = null;
                                 <h3><?php echo htmlspecialchars($row['nombre']); ?></h3>
                                 <p class="price">$<?php echo number_format($row['precio'], 2, '.', ','); ?></p>
                                 <button>Comprar</button>
+                                <button class="add-to-cart" onclick="addProducto(<?php echo $id; ?>)">AGREGAR AL CARRITO</button>
                                 <div class="rating">
                                     <input value="5" name="rate<?php echo $id; ?>" id="star5-<?php echo $id; ?>" type="radio">
                                     <label title="text" for="star5-<?php echo $id; ?>"></label>
@@ -178,11 +185,9 @@ $con = null;
             <div class="footer-section">
                 <h3>PRODUCTOS</h3>
                 <ul>
-                    <li><a href="#">Vases</a></li>
-                    <li><a href="#">Mugs & Cups</a></li>
-                    <li><a href="#">Plates</a></li>
-                    <li><a href="#">Jugs</a></li>
-                    <li><a href="#">Gift Baskets</a></li>
+                    <li><a href="#">DIOR</a></li>
+                    <li><a href="#">Carolina Herrera</a></li>
+                    <li><a href="#">Versace</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -271,6 +276,26 @@ $con = null;
         }
     </script>                        
     <script src="scripts.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    
+    <script>
+    function addProducto(id){
+        let url = 'clases/carrito.php'
+        let formData = new FormData()
+        formData.append('id', id)
+
+        fetch(url,{
+            method: 'POST',
+            body: formData,
+            mode: 'cors'
+        }).then(response => response.json())
+        .then(data=> {
+            if(data.ok){  
+                let elemento = document.getElementById("num_cart");
+                elemento.innerHTML = data.numero;
+            }
+        })
+    }
+</script>
 </body>
+
 </html>

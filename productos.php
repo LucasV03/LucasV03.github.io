@@ -1,4 +1,6 @@
-
+<?php 
+require 'config/config.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +9,8 @@
     <title>Todos los Productos</title>
     <link rel="stylesheet" href="styles.css"> <!-- Estilos globales -->
     <link rel="stylesheet" href="productos.css"> <!-- Estilos específicos para productos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
 <body>
 <header>
@@ -30,13 +34,12 @@
                     </label>
                 </div>
                 <input type="text" placeholder="Buscar...">
-                <button data-quantity="0" class="btn-cart">
-                    <svg class="icon-cart" viewBox="0 0 24.38 30.52" height="30.52" width="24.38" xmlns="http://www.w3.org/2000/svg">
-                        <title>icon-cart</title>
-                        <path transform="translate(-3.62 -0.85)" d="M28,27.3,26.24,7.51a.75.75,0,0,0-.76-.69h-3.7a6,6,0,0,0-12,0H6.13a.76.76,0,0,0-.76.69L3.62,27.3v.07a4.29,4.29,0,0,0,4.52,4H23.48a4.29,4.29,0,0,0,4.52-4ZM15.81,2.37a4.47,4.47,0,0,1,4.46,4.45H11.35a4.47,4.47,0,0,1,4.46-4.45Zm7.67,27.48H8.13a2.79,2.79,0,0,1-3-2.45L6.83,8.34h3V11a.76.76,0,0,0,1.52,0V8.34h8.92V11a.76.76,0,0,0,1.52,0V8.34h3L26.48,27.4a2.79,2.79,0,0,1-3,2.44Zm0,0"></path>
-                    </svg>
-                    <span class="quantity"></span>
-                </button>
+                <div class="carrit">
+                <a href="carrito.php">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <span class="texto-carrito" id="num_cart"><?php echo $num_cart;?></span>
+                </div>
             </div>
         </nav>
     </div>
@@ -54,7 +57,6 @@
                     <option value="all">Todas</option>
                     <option value="mens">Hombres</option>
                     <option value="womens">Mujeres</option>
-                    <option value="unisex">Unisex</option>
                 </select>
                 <label for="price">Precio:</label>
                 <input type="range" id="price" name="price" min="0" max="200">
@@ -72,8 +74,9 @@
         
         <div class="products">
             <?php
+                
                 require 'config/database.php';
-                session_start();
+                
                 $db = new Database();
                 $con = $db->conectar();
 
@@ -81,25 +84,26 @@
                 $sql->execute();
                 $resultado = $sql->fetchAll(PDO::FETCH_ASSOC);
                 $con = null;
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
-                    $productId = $_POST['product_id'];
-                    $productName = $_POST['product_name'];
-                    $productPrice = $_POST['product_price'];
                 
-                    $cartItem = [
-                        'id' => $productId,
-                        'name' => $productName,
-                        'price' => $productPrice,
-                        'quantity' => 1
-                    ];
                 
-                    if (isset($_SESSION['cart'][$productId])) {
-                        $_SESSION['cart'][$productId]['quantity'] += 1;
+                $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                $con = $db->conectar();
+                if ($id > 0) {
+                    $sql = $con->prepare("SELECT * FROM productos WHERE id = :id AND activo = 1");
+                    $sql->execute(['id' => $id]);
+                    $producto = $sql->fetch(PDO::FETCH_ASSOC);
+                    $con = null; 
+
+                    if ($producto) {
+                        
+                        echo "<h1>" . htmlspecialchars($producto['nombre']) . "</h1>";
+                        echo "<p>Precio: $" . number_format($producto['precio'], 2, '.', ',') . "</p>";
+                        
                     } else {
-                        $_SESSION['cart'][$productId] = $cartItem;
+                        echo "Producto no encontrado.";
                     }
                 } 
-
+                
                 foreach ($resultado as $row) {
                     $id = $row["id"];
                     $imagen = "imgs/productos/" . $id . "/prin.jpg";
@@ -109,14 +113,21 @@
                     echo '
                     <div class="product-item">
                         <div class="polaroid">
-                            <img src="' . htmlspecialchars($imagen) . '" alt="' . htmlspecialchars($row['nombre']) . '">
+                            <a href="detalles.php?id=' . htmlspecialchars($id) . '">
+                                <img src="' . htmlspecialchars($imagen) . '" alt="' . htmlspecialchars($row['nombre']) . '">
+                            </a>
                         </div>
                         <div class="producto">
-                            <h3>' . htmlspecialchars($row['nombre']) . '</h3>
-                            <p class="price">$' . number_format($row['precio'], 2, '.', ',') . '</p>
-                            <button>Comprar</button>
+                            <a href="detalles.php?id=' . htmlspecialchars($id) . '">
+                                <h3>' . htmlspecialchars($row['nombre']) . '</h3>
+                                <p class="price">$' . number_format($row['precio'], 2, '.', ',') . '</p>
+                            </a>
+                            <button onclick="comprarProducto(' . $id . ')">Comprar</button>
+                            <button class="add-to-cart" onclick="addProducto(<?php echo $id; ?>)">AGREGAR AL CARRITO</button>
                         </div>
                     </div>';
+
+                    
                 }
             ?>
         </div>
@@ -138,11 +149,9 @@
             <div class="footer-section">
                 <h3>PRODUCTOS</h3>
                 <ul>
-                    <li><a href="#">Vases</a></li>
-                    <li><a href="#">Mugs & Cups</a></li>
-                    <li><a href="#">Plates</a></li>
-                    <li><a href="#">Jugs</a></li>
-                    <li><a href="#">Gift Baskets</a></li>
+                    <li><a href="#">DIOR</a></li>
+                    <li><a href="#">Carolina Herrera</a></li>
+                    <li><a href="#">Versace</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -158,3 +167,29 @@
 </body>
 </html>
 
+<script>
+function comprarProducto(id) {
+    
+    alert('Producto ' + $id[nombre] + ' añadido al carrito');
+}
+</script>
+
+<script>
+    function addProducto(id){
+        let url = 'clases/carrito.php'
+        let formData = new FormData()
+        formData.append('id', id)
+
+        fetch(url,{
+            method: 'POST',
+            body: formData,
+            mode: 'cors'
+        }).then(response => response.json())
+        .then(data=> {
+            if(data.ok){  
+                let elemento = document.getElementById("num_cart");
+                elemento.innerHTML = data.numero;
+            }
+        })
+    }
+</script>

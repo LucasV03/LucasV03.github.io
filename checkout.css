@@ -1,0 +1,120 @@
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    background: #fff;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.checkout-form {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.left-side, .right-side {
+    flex: 1;
+}
+
+.contacts, .shipping-address, .shipping-method {
+    margin-bottom: 20px;
+}
+
+.contacts h2, .shipping-address h2, .shipping-method h2 {
+    margin-bottom: 10px;
+}
+
+.contact-form input, .shipping-address input, .shipping-address textarea, .shipping-method div {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.name-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.city-postcode {
+    display: flex;
+    gap: 10px;
+}
+
+.shipping-address textarea {
+    resize: none;
+    height: 80px;
+}
+
+.privacy-policy {
+    display: flex;
+    align-items: center;
+}
+
+.privacy-policy input {
+    margin-right: 10px;
+}
+
+.shipping-method div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.payment-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.right-side {
+    background: #333;
+    color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.right-side h2 {
+    margin-bottom: 20px;
+}
+
+.order-item {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.order-item img {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+}
+
+.item-details p {
+    margin-bottom: 5px;
+}
+
+.order-total p {
+    margin-top: 10px;
+    font-size: 18px;
+}

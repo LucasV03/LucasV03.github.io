@@ -6,7 +6,7 @@
 }
 /*arriba*/
 
-header {
+.header {
     background-color: #f8f8f8;
     padding: 1rem 0;
     border-bottom: 1px solid #ddd;
@@ -24,7 +24,7 @@ body {
 .container {
     width: 100%;
     margin: 0;
-    padding: 1;
+    padding: 1rem;
 }
 
 
@@ -43,6 +43,7 @@ h2 {
     color: #ffffff;
 }
 
+
 body.dark-mode {
     background-color: #121212;
     color: #e0e0e0;
@@ -57,32 +58,59 @@ button.dark-mode, nav ul li a.dark-mode {
     background-color: #333;
     color: #fff;
 }
+.add-to-cart {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.carrito {
+    position:relative;
+    height: 1000px;
+    width: 10000px;
+    background-color: #fd0000;
+}
 
-
+.texto-carrito {
+    position: absolute;
+    border: 2px solid rgba(243, 7, 7, 0.991);
+    background-color: #000;
+    border-radius: 50%;
+    right: -10px; /* Ajusta según sea necesario */
+    top: -10px;   /* Ajusta según sea necesario */
+    height: 20px; /* Ajusta según sea necesario */
+    width: 20px;  /* Ajusta según sea necesario */
+    text-align: center;
+    line-height: 20px; /* Debe coincidir con la altura para centrar el texto verticalmente */
+    color: rgb(0, 0, 0); /* Añadido para que el texto sea visible */
+    font-size: 12px; /* Ajusta el tamaño de la fuente */
+}
 /*barra navegacion*/
-.nav-links {
+.header nav-links {
     list-style: none;
     display: flex;
     gap: 1px;
 }
 
-.nav-links li {
+.header nav-links li {
     display: inline;
 }
 
-.navbar-links ul {
+.header navbar-links ul {
     list-style: none;
     display:flex;
     justify-content:left
 }
 
-.navbar-links ul li a {
+.header navbar-links ul li a {
     text-decoration: none;
     color: #000000;
     font-weight: bold;
 }
 
-.navbar {
+.header navbar {
     position:fixed;
     top:0;
     z-index: 1000;
@@ -425,33 +453,6 @@ form button:hover {
 
 
 
-@media only screen and (max-width: 768px) {
-    .hero {
-        padding: 80px 10px;
-    }
-    .hero h1 {
-        font-size: 2.5em;
-    }
-    .hero p {
-        font-size: 1em;
-    }
-}
-
-@media only screen and (max-width: 480px) {
-    .hero {
-        padding: 60px 10px;
-    }
-    .hero h1 {
-        font-size: 2em;
-    }
-    .hero p {
-        font-size: 0.9em;
-    }
-    .hero .btn {
-        font-size: 0.9em;
-        padding: 8px 16px;
-    }
-}
 
 .btn-cart {
     display: flex;
